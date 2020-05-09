@@ -4,7 +4,8 @@ from PIL import Image
 def DepthNorm(x, maxDepth):
     return maxDepth / x
 
-def predict_format_single(images, model, minDepth=10, maxDepth=1000):
+def predict_single_file(img_path, model=model, minDepth=10, maxDepth=1000):
+    images = np.clip(np.asarray(Image.open(img_path), dtype=float) / 255, 0, 1)
     # Support multiple RGBs, one RGB image, even grayscale
     if len(images.shape) < 3: image = np.stack((images,images,images), axis=2)
     if len(images.shape) < 4: image = images.reshape((1, images.shape[0], images.shape[1], images.shape[2]))
@@ -20,7 +21,6 @@ def predict_format_single(images, model, minDepth=10, maxDepth=1000):
     rescaled = rescaled / np.max(rescaled)
     rescaled = rescaled * 255
     return rescaled
-
 
 def predict(model, images, minDepth=10, maxDepth=1000, batch_size=2):
     # Support multiple RGBs, one RGB image, even grayscale 
